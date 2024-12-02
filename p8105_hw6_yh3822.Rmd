@@ -209,8 +209,31 @@ birth_df = read_csv("./data/birthweight.csv") |>
 ```
 
 
+I would like to create a model that explored the relationship between mother-related variables and baby birth weight, so I chose delwt, menarche, mheight, momage, mrace, wtgain as the predictors, bwt as the response variable.
 
 
+First, build the model.
+
+```{r}
+mother_model = lm(bwt ~ delwt + menarche + mheight + momage + mrace + wtgain, data = birth_df)
+summary(mother_model)
+```
+
+
+```{r}
+birth_df |>
+  add_predictions(mother_model, var = "fitted") |>
+  add_residuals(mother_model, var = "residuals") |>
+  ggplot(aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(
+    title = "Residuals vs Fitted Values",
+    x = "Fitted Values",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+```
 
 
 
