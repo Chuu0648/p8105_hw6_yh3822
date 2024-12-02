@@ -83,6 +83,15 @@ bootstrap_results %>%
 The distribution is symmetric, indicating consistent estimates across bootstrap samples and minimal variability in log(beta0*beta1). It suggests a stable relationship between tmax and tmin.
 
 
+```{r}
+bootstrap_results %>%
+  summarise(
+    r_squared_lower = quantile(r_squared, 0.025),
+    r_squared_upper = quantile(r_squared, 0.975),
+    log_beta0_beta1_lower = quantile(log_beta0_beta1, 0.025),
+    log_beta0_beta1_upper = quantile(log_beta0_beta1, 0.975)
+  )
+```
 
 
 
