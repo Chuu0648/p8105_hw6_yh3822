@@ -10,6 +10,7 @@ library(tidyverse)
 library(dplyr)
 library(broom)
 library(p8105.datasets)
+library(purrr)
 
 set.seed(1)
 ```
@@ -234,6 +235,55 @@ birth_df |>
   ) +
   theme_minimal()
 ```
+
+
+
+```{r}
+model1 <- lm(bwt ~ blength + gaweeks, data = birth_df)
+summary(model1)
+
+model2 <- lm(bwt ~ bhead * blength * babysex, data = birth_df)
+summary(model2)
+```
+
+
+Both these two models have higher R-squared and lower residual standard errors than my model.
+
+
+
+
+```{r}
+birth_df %>% 
+  add_predictions(mother_model, var = "fitted") %>%
+  add_residuals(mother_model, var = "residuals") %>%
+  ggplot(aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed")
+
+birth_df %>% 
+  add_predictions(model1, var = "fitted") %>%
+  add_residuals(model1, var = "residuals") %>% 
+  ggplot(aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed")
+
+birth_df %>% 
+  add_predictions(model2, var = "fitted") %>%
+  add_residuals(model2, var = "residuals") %>% 
+  ggplot(aes(x = fitted, y = residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed")
+```
+
+
+```{r}
+rmse(mother_model, birth_df)
+rmse(model1, birth_df) 
+rmse(model2, birth_df)
+```
+
+
+The model using head circumference, length, sex, and all interactions (including the three-way interaction) between these has the lowest RMSE, so it is the best fitted model.
 
 
 
