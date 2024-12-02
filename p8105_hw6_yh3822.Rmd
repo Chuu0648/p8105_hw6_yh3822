@@ -155,6 +155,42 @@ homicide_df |>
 ```
 
 
+```{r}
+city_results = homicide_df |>
+  group_by(city_state) |>
+  nest() |>
+  mutate(
+    glm_model = map(data, ~ glm(solved ~ victim_age + victim_sex + victim_race, 
+                                data = ., family = "binomial")),
+    glm_tidy = map(glm_model, ~ broom::tidy(.) |>
+                     mutate(
+                       OR = exp(estimate),
+                       CI_lower = exp(estimate - 1.96 * std.error),
+                       CI_upper = exp(estimate + 1.96 * std.error)
+                     ) |>
+                     filter(term == "victim_sexMale"))
+  ) |>
+  unnest(glm_tidy) |>
+  select(city_state, OR, CI_lower, CI_upper)
+
+city_results= city_results|>
+  arrange(OR) |>
+  mutate(city_state = factor(city_state, levels = city_state)) 
+  
+ggplot(data = city_results, aes(x = city_state, y = OR)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = CI_lower, ymax = CI_upper), width = 0.2) +
+  coord_flip() +
+  labs(
+    title = "Adjusted Odds Ratios for Solving Homicides by City",
+    x = "City",
+    y = "Odds Ratio"
+  ) +
+  theme_minimal()
+```
+
+
+The majority of cities have ORs near 1, suggesting that gender does not strongly influence the likelihood of solving homicides. A few cities show ORs significantly greater or less than 1. Some cities have wide confidence intervals, indicating less certainty in the OR estimates.
 
 
 
