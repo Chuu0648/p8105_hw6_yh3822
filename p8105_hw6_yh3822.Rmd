@@ -193,6 +193,21 @@ ggplot(data = city_results, aes(x = city_state, y = OR)) +
 The majority of cities have ORs near 1, suggesting that gender does not strongly influence the likelihood of solving homicides. A few cities show ORs significantly greater or less than 1. Some cities have wide confidence intervals, indicating less certainty in the OR estimates.
 
 
+## Problem 3
+
+
+
+```{r}
+birth_df = read_csv("./data/birthweight.csv") |>
+  mutate(
+    babysex = factor(babysex, labels = c("Male", "Female")),
+    frace = factor(frace),
+    mrace = factor(mrace),
+    malform = factor(malform, labels = c("Absent", "Present")),
+    across(everything(), ~ ifelse(is.na(.), median(., na.rm = TRUE), .))
+  )
+```
+
 
 
 
