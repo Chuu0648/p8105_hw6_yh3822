@@ -113,8 +113,25 @@ homicide_df = read_csv("./data/homicide-data.csv") |>
 ```
 
 
+```{r}
+baltimore_data = homicide_df |>
+  filter(city_state == "Baltimore, MD") 
+
+baltimore_model =
+  glm(solved ~ victim_age + victim_sex + victim_race, data = baltimore_data, family = "binomial")
+```
 
 
+```{r}
+baltimore_model %>%
+  broom::tidy() %>%
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>%
+  filter(term == "victim_sexMale")
+```
 
 
 
