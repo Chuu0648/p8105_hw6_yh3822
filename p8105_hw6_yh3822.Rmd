@@ -10,6 +10,8 @@ library(tidyverse)
 library(dplyr)
 library(broom)
 library(p8105.datasets)
+
+set.seed(1)
 ```
 
 
@@ -27,6 +29,49 @@ weather_df =
     tmax = tmax / 10) %>%
   select(name, id, everything())
 ```
+
+
+
+## Problem 1
+
+
+```{r}
+bootstrap_analysis = function(data) {
+  model = lm(tmax ~ tmin, data = data)
+  r_squared = glance(model)$r.squared
+  coefs = tidy(model)
+  log_beta0_beta1 = log(coefs$estimate[1] * coefs$estimate[2])
+  
+  tibble(
+    r_squared = r_squared,
+    log_beta0_beta1 = log_beta0_beta1
+  )
+}
+```
+
+
+
+```{r}
+bootstrap_results = weather_df |>
+  modelr::bootstrap(n = 5000) |> 
+  mutate(results = map(strap, ~ bootstrap_analysis(as_tibble(.)))) |> 
+  select(results) |> 
+  unnest(results)
+```
+
+
+
+```{r}
+bootstrap_results %>%
+  ggplot(aes(x = r_squared)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  labs(title = "Distribution of R-squared", x = "R-squared", y = "Density")
+```
+
+This plot shows that the model consistently explains a high proportion of the variance in values primarily ranging between 0.88 and 0.94, and the density plot of r_squared is approximately symmetric.
+
+
+
 
 
 
