@@ -72,10 +72,15 @@ This plot shows that the model consistently explains a high proportion of the va
 
 
 
+```{r}
+bootstrap_results %>%
+  ggplot(aes(x = log_beta0_beta1)) +
+  geom_density(fill = "green", alpha = 0.5) +
+  labs(title = "Distribution of log(beta0 * beta1)", x = "log(beta0 * beta1)", y = "Density")
+```
 
 
-
-
+The distribution is symmetric, indicating consistent estimates across bootstrap samples and minimal variability in log(beta0*beta1). It suggests a stable relationship between tmax and tmin.
 
 
 
