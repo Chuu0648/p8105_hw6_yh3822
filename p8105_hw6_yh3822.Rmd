@@ -95,5 +95,37 @@ bootstrap_results %>%
 
 
 
+## Problem 2
+
+
+```{r}
+homicide_df = read_csv("./data/homicide-data.csv") |>
+  mutate(
+    city_state = paste(city, state, sep = ", "),
+    solved = if_else(disposition == "Closed by arrest", 1, 0),
+    victim_age = as.numeric(victim_age)
+  ) |>
+  filter(
+    !city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", "Tulsa, AL"),
+    victim_race %in% c("White", "Black"),
+    !is.na(victim_age)
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
