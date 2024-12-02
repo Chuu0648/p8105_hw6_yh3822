@@ -135,6 +135,24 @@ baltimore_model %>%
 
 
 
+```{r}
+homicide_df |>
+  group_by(city_state) |>
+  nest() |>
+  mutate(
+    glm_model = map(data, ~ glm(solved ~ victim_age + victim_sex + victim_race, 
+                                data = ., family = "binomial")),
+    glm_tidy = map(glm_model, ~ broom::tidy(.) |>
+                     mutate(
+                       OR = exp(estimate),
+                       CI_lower = exp(estimate - 1.96 * std.error),
+                       CI_upper = exp(estimate + 1.96 * std.error)
+                     ) |>
+                     filter(term == "victim_sexMale"))
+  ) |>
+  unnest(glm_tidy) |>
+  select(city_state, OR, CI_lower, CI_upper)
+```
 
 
 
